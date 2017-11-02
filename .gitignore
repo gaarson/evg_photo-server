@@ -1,4 +1,6 @@
 *_temp
 logs
 
+config.lua
+
 *.compiled

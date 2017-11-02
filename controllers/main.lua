@@ -1,12 +1,12 @@
+local assert_error =require("lapis.application").assert_error
 local Photos = require "models.photos"
-local to_json = require("lapis.util").to_json
 
 return {
-  before = function() 
-    print("ASfsafsaf")
+  before = function(self) 
+    self.res.headers["Access-Control-Allow-Origin"] = "*"
   end,
   GET = function() 
-    local photos = Photos:getMainScreen() 
-    return to_json(photos)
+    local photos = assert_error(Photos:getMainScreen())
+    return { json = photos }
   end
 }
