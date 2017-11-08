@@ -7,12 +7,24 @@ return {
   before = function(self) 
     self.res.headers["Access-Control-Allow-Origin"] = "*"
   end,
+
+  OPTIONS = function(self) 
+    
+  end,
+
   POST = function(self)
-    print(to_json(self.params))
-    return {
-      json = {test = "test"}
-    }
-  end
+    if self.params.newpic then 
+      local file = self.params.newpic
+
+      local success = assert_error(Photos:uploadPhoto(file))
+      return { json = { success = success } }
+    else 
+      local info = self.params;
+
+      local success = assert_error(Photos:setPhotoInfo(info))
+      return { json = { success = info } }
+    end 
+  end 
 }
 
 
