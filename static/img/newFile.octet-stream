@@ -1,0 +1,95 @@
+$(function () {
+
+	$("a.bg-dark-red.red").on('click', function (e) {
+		e.preventDefault();
+		$('html, body').animate({
+			scrollTop: $('#games').offset().top
+		}, 1000);
+	});
+
+	$("a.bg-red.white").on('click', function (e) {
+		e.preventDefault();
+		$('html, body').animate({
+			scrollTop: $('#updates').offset().top
+		}, 1000);
+	});
+
+
+	$(window).scroll(function () {
+		if ($(this).scrollTop() > 100) {
+			$('#back-to-top').fadeIn();
+		} else {
+			$('#back-to-top').fadeOut();
+		}
+	});
+
+	// Click event to scroll to top
+	$('#back-to-top').click(function () {
+		$('html, body').animate({scrollTop: 0}, 800);
+		return false;
+	});
+
+	$('#game-action-favorite').click(function () {
+		var url = $(this).attr('href');
+		$.ajax({url: url})
+				.done(function (html) {
+					$('#game-action-favorite').toggleClass("active");
+				});
+		return false;
+	});
+
+	if ($('#game-vote').length == 1) {
+		$('#game-vote a').click(gameVote);
+	}
+
+	checkMoreGames();
+});
+
+function gameVote() {
+	var url = $(this).attr("href");
+	$.ajax({url: url})
+			.done(function (html) {
+				$('#game-vote').html(html);
+			});
+
+	return false;
+}
+
+$('#action-more-games a').click(function () {
+	var parameters = $('#more-list').attr('data-parameters');
+
+	var offset = $('#more-list').attr('data-offset');
+	if (offset == null) {
+		offset = 1;
+	} else {
+		offset++;
+	}
+
+	parameters += '&offset=' + offset + '&random=' + (new Date().getTime());
+
+	var url = $('#more-list').attr('data-url') + '?' + parameters;
+
+	$('#action-more-games').hide();
+
+	$.ajax({url: url})
+	.done(function(html) {
+		$('#more-list').append(html);
+
+		$('#more-list').attr('data-offset', offset);
+
+		checkMoreGames();
+
+		processing = false;
+	});
+
+	return false;
+});
+
+function checkMoreGames() {
+	if ($('.game-item.last-game-result').length == 1) {
+		$('#action-more-games').hide();
+		return;
+	}
+	
+	$('#action-more-games').show();
+}
