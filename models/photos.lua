@@ -15,7 +15,9 @@ function Photos:getGalleryByCategory(category_id)
 end
 
 function Photos:uploadPhoto(file, info)
+
   local type = file["content-type"]
+  
   local photo = self:create({
       title = info.name,
       category_id = info.category_id,
@@ -28,13 +30,12 @@ function Photos:uploadPhoto(file, info)
                     .. info.name .. "_" 
                     .. photo.id
                     .. "." .. mimeType
-
   self:update(
     {src = "/img/" .. filePath}, 
     { id = photo.id }
   )
 
-  local upladed = io.open(self:img_path .. filePath, "w")
+  local upladed = io.open(self.img_path .. filePath, "w")
 
   upladed:write(file.content)
   upladed:close()
