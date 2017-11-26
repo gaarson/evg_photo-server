@@ -13,13 +13,18 @@ return {
     
   end,
 
+  GET = function(self) 
+    local photos = assert_error(Photos:getPhotos())
+    return { json = photos } 
+  end,
+
   POST = json_params(function(self)
     local file = self.params.file
     local info = self.params
 
     local success = assert_error(Photos:uploadPhoto(file, info))
-    return { json = { success } }
-  end)
+    return { json = success }
+  end),
 }
 
 

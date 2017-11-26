@@ -1,8 +1,11 @@
-local to_json = require("lapis.utils").to_json
+local to_json = require("lapis.util").to_json
+local db = require "lapis.db"
 local Model = require("lapis.db.model").Model
-local Categories = Model:extend("photo")
+local Categories = Model:extend("categories")
 
-local split = require "sides.split"
+local split = require "utils.split"
+
+Categories.img_path = "./build/img/categories/"
 
 function Categories:getCategories() 
   return self:select()
@@ -10,30 +13,29 @@ end
 
 function Categories:uploadCategory(file, info) 
   local type = file["content-type"]
-  local photo = self:create({
-      title = info.name,
-      category_id = info.category_id,
-      caption = info.caption
-    }, "id")
-
   local mimeType = split(type, "/")[2]
-  local filePath = info.category_id 
-                    .. "/" 
-                    .. info.name .. "_" 
-                    .. photo.id
-                    .. "." .. mimeType
+  local category = self:create {
+      title = info.name,
+      description = info.caption
+    }
+  local filePath = category.id .. "." .. mimeType
 
-  self:update(
-    {src = "/img/" .. filePath}, 
-    { id = photo.id }
-  )
+  db.query("UPDATE categories SET src = ? WHERE id = ?", 
+    "/img/categories/" .. filePath, category.id)
 
-  local upladed = io.open(self:img_path .. filePath, "w")
+  local upladed = io.open(self.img_path .. filePath, "w")
 
+  os.execute("mkdir " .. "./build/img/" .. category.id)
   upladed:write(file.content)
   upladed:close()
 
-  return photo
+  return category
+end
+
+function Categories:deleteCategory(category_id) 
+  local category = self:delete({id = category_id})
+  
+  return category
 end
 
 return Categories
