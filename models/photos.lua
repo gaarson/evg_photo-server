@@ -11,6 +11,12 @@ function Photos:getMainScreen()
   return self:select("where is_main=1")
 end
 
+function Photos:getPhoto(id) 
+  local photo = self:find(id)
+  
+  return photo
+end 
+
 function Photos:getPhotos(category_id)
   if category_id then 
     return self:select("where category_id=?", category_id)
@@ -25,6 +31,7 @@ function Photos:uploadPhoto(file, info)
   
   local photo = self:create {
       title = info.name,
+      is_main = info.main,
       category_id = info.category_id,
       caption = info.caption
     }
@@ -45,10 +52,13 @@ function Photos:uploadPhoto(file, info)
   return photo
 end
 
-function Photos:deletePhoto(photo_id) 
-  local deleted_photo = self:delete({id = photo_id})
+function Photos:deletePhoto(photo) 
+
+  local deleted = self:find(photo.id)
+  deleted:delete()
+  os.remove("./build" .. photo.src)
   
-  return photo
+  return deleted
 end
 
 

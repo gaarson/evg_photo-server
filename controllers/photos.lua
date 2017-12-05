@@ -14,7 +14,10 @@ return {
   end,
 
   GET = function(self) 
-    local photos = assert_error(Photos:getPhotos())
+    local photo_id = self.params.category or nil
+    print(photo_id)
+    local photos = assert_error(Photos:getPhotos(photo_id))
+
     return { json = photos } 
   end,
 
@@ -25,6 +28,12 @@ return {
     local success = assert_error(Photos:uploadPhoto(file, info))
     return { json = success }
   end),
+  
+  DELETE = function(self)
+    local success = assert_error(Photos:deletePhoto(self.params))
+  
+    return { json = { success } }
+  end
 }
 
 

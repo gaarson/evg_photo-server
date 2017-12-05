@@ -17,14 +17,4 @@ app:match("/api/photos", respond_to(photos))
 app:match("/api/categories", respond_to(categories))
 app:match("/api/main/feedback", respond_to(feedback))
 
---app:get('/*', function(self) 
-  --print(to_json(io))
-  --return 'alll'
---end)
---app:get('/', function(self) 
-  --local file = io.open('./build/img/1.jpg', 'w')
-  --print(to_json(file))
-  --return file
---end)
-
 return app

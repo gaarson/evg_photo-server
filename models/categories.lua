@@ -11,6 +11,12 @@ function Categories:getCategories()
   return self:select()
 end 
 
+function Categories:getCategory(id) 
+  local category = self:find(id)
+
+  return category
+end
+
 function Categories:uploadCategory(file, info) 
   local type = file["content-type"]
   local mimeType = split(type, "/")[2]
@@ -32,10 +38,13 @@ function Categories:uploadCategory(file, info)
   return category
 end
 
-function Categories:deleteCategory(category_id) 
-  local category = self:delete({id = category_id})
+function Categories:deleteCategory(category) 
   
-  return category
+  local deleted = self:find(category.id)
+  deleted:delete()
+  os.remove("./build" .. category.src)
+  
+  return deleted
 end
 
 return Categories

@@ -25,4 +25,10 @@ return {
     local success = assert_error(Categories:uploadCategory(file, info))
     return { json = success }
   end),
+ 
+  DELETE = function(self)
+    local success = assert_error(Categories:deleteCategory(self.params))
+
+    return { json = { success } }
+  end
 }
