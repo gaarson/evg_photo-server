@@ -15,7 +15,6 @@ return {
 
   GET = function(self) 
     local photo_id = self.params.category or nil
-    print(photo_id)
     local photos = assert_error(Photos:getPhotos(photo_id))
 
     return { json = photos } 
