@@ -1,6 +1,5 @@
 local to_json = require("lapis.util").to_json
 local db = require "lapis.db"
-local magick = require "magick"
 local Model = require("lapis.db.model").Model
 local Photos = Model:extend("photos")
 
@@ -18,19 +17,28 @@ function Photos:getPhoto(id)
   return photo
 end 
 
-function Photos:getPhotos()
+function Photos:getPhotos(category_id)
   local photos = {}
 
   if category_id then 
-    photos = self:select("where category_id=?", category_id)
+    photos = self:select(
+      "where category_id=?", 
+      category_id, 
+      {fields = "thumbnail as src, id, caption, title"}
+    )
   else 
-    photos = self:select(nil, nil, {fields = "src, id, caption, title"})
+    photos = self:select(
+      nil, 
+      nil, 
+      {fields = "thumbnail as src, id, caption, title"}
+    )
   end
 
   return photos
 end
 
 function Photos:uploadPhoto(file, info)
+  local magick = require("magick.wand")
   local type = file["content-type"]
   local mimeType = split(type, "/")[2]
   
@@ -54,14 +62,14 @@ function Photos:uploadPhoto(file, info)
 
   db.query("UPDATE photos SET src = ?, thumbnail = ? WHERE id = ?", 
     "/img/" .. filePath, "/img/" .. thumbPath, photo.id)
-
+  
   local upladed = io.open(self.img_path .. filePath, "w")
   upladed:write(file.content)
   upladed:close()
-  local thumb = io.open(self.img_path .. thumbPath, "w")
-  thumb:close();
 
-  magick.thumb(self.img_path .. filePath, "300x400", self.img_path .. thumbPath)
+  local thumb = magick.load_image_from_blob(file.content)
+  thumb:adaptive_resize(thumb:get_width() / 3, 300)
+  thumb:write(self.img_path .. thumbPath)
 
   return photo
 end
@@ -70,6 +78,7 @@ function Photos:deletePhoto(photo)
 
   local deleted = self:find(photo.id)
   deleted:delete()
+  print("deleted", deleted)
   os.remove("./build" .. photo.src)
   
   return deleted
