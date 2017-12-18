@@ -24,7 +24,7 @@ function Photos:getPhotos(category_id)
     photos = self:select(
       "where category_id=?", 
       category_id, 
-      {fields = "thumbnail as src, id, caption, title"}
+      {fields = "src, thumbnail, id, caption, title"}
     )
   else 
     photos = self:select(

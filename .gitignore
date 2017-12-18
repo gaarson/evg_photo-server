@@ -5,4 +5,6 @@ build
 
 config.lua
 
+conf.lua
+
 *.compiled
