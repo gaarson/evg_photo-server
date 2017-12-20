@@ -7,4 +7,6 @@ config.lua
 
 conf.lua
 
+nginx.conf
+
 *.compiled

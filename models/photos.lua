@@ -24,7 +24,7 @@ function Photos:getPhotos(category_id)
     photos = self:select(
       "where category_id=?", 
       category_id, 
-      {fields = "src, thumbnail, id, caption, title"}
+      {fields = "thumbnail as src, id, caption, title, width, height"}
     )
   else 
     photos = self:select(
@@ -41,12 +41,18 @@ function Photos:uploadPhoto(file, info)
   local magick = require("magick.wand")
   local type = file["content-type"]
   local mimeType = split(type, "/")[2]
+  local image = magick.load_image_from_blob(file.content)
+
+  local thumb = image
+  thumb:adaptive_resize(nil, 300)
   
   local photo = self:create {
       title = info.name,
       is_main = info.main,
       category_id = info.category_id,
-      caption = info.caption
+      caption = info.caption,
+      width = thumb:get_width(),
+      height = thumb:get_height()
     }
   local thumbPath = info.category_id 
                     .. "/" 
@@ -63,12 +69,7 @@ function Photos:uploadPhoto(file, info)
   db.query("UPDATE photos SET src = ?, thumbnail = ? WHERE id = ?", 
     "/img/" .. filePath, "/img/" .. thumbPath, photo.id)
   
-  local upladed = io.open(self.img_path .. filePath, "w")
-  upladed:write(file.content)
-  upladed:close()
-
-  local thumb = magick.load_image_from_blob(file.content)
-  thumb:adaptive_resize(thumb:get_width() / 3, 300)
+  image:write(self.img_path .. filePath)
   thumb:write(self.img_path .. thumbPath)
 
   return photo
