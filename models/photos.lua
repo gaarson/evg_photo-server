@@ -24,7 +24,7 @@ function Photos:getPhotos(category_id)
     photos = self:select(
       "where category_id=?", 
       category_id, 
-      {fields = "thumbnail as src, id, caption, title, width, height"}
+      {fields = "src, id, caption, title, width, height"}
     )
   else 
     photos = self:select(
@@ -42,9 +42,10 @@ function Photos:uploadPhoto(file, info)
   local type = file["content-type"]
   local mimeType = split(type, "/")[2]
   local image = magick.load_image_from_blob(file.content)
+  local thumb = magick.load_image_from_blob(file.content)
 
-  local thumb = image
-  thumb:adaptive_resize(nil, 300)
+  thumb:scale(nil, 400)
+  thumb:set_quality(100)
   
   local photo = self:create {
       title = info.name,
