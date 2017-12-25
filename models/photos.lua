@@ -88,7 +88,6 @@ end
 function Photos:deletePhoto(photo) 
 
   local deleted = self:find(photo.id)
-  print(to_json(deleted))
   os.remove("./build" .. deleted.src)
   os.remove("./build" .. deleted.thumbnail)
 
