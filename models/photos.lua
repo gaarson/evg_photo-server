@@ -66,9 +66,18 @@ function Photos:uploadPhoto(file, info)
                     .. info.name .. "_" 
                     .. photo.id
                     .. "." .. mimeType
+                    
+  --photo = self:find(photo.id);
 
-  db.query("UPDATE photos SET src = ?, thumbnail = ? WHERE id = ?", 
-    "/img/" .. filePath, "/img/" .. thumbPath, photo.id)
+  photo.src = "/img/" .. filePath
+  photo.thumbnail = "/img/" .. thumbPath
+  photo:update('src', 'thumbnail')
+
+  --db.query(
+    --"UPDATE photos SET src = ?, thumbnail = ? WHERE id = ?", 
+    --"/img/" .. filePath, 
+    --"/img/" .. thumbPath, photo.id
+  --)
   
   image:write(self.img_path .. filePath)
   thumb:write(self.img_path .. thumbPath)
@@ -79,9 +88,11 @@ end
 function Photos:deletePhoto(photo) 
 
   local deleted = self:find(photo.id)
+  print(to_json(deleted))
+  os.remove("./build" .. deleted.src)
+  os.remove("./build" .. deleted.thumbnail)
+
   deleted:delete()
-  print("deleted", deleted)
-  os.remove("./build" .. photo.src)
   
   return deleted
 end
