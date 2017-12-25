@@ -8,7 +8,7 @@ local split = require "utils.split"
 Photos.img_path = "./build/img/" 
 
 function Photos:getMainScreen() 
-  return self:select("where is_main=1")
+  return self:select("where is_main=?", 1, {fields = "src, id, caption, title"})
 end
 
 function Photos:getPhoto(id) 
