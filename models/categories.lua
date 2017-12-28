@@ -18,22 +18,27 @@ function Categories:getCategory(id)
 end
 
 function Categories:uploadCategory(file, info) 
+  local magick = require("magick.wand")
   local type = file["content-type"]
   local mimeType = split(type, "/")[2]
+  local image = magick.load_image_from_blob(file.content)
+
+  image:scale(nil, 300)
+  image:set_quality(100)
+
   local category = self:create {
       title = info.name,
       description = info.caption
     }
   local filePath = category.id .. "." .. mimeType
 
-  db.query("UPDATE categories SET src = ? WHERE id = ?", 
-    "/img/categories/" .. filePath, category.id)
-
-  local upladed = io.open(self.img_path .. filePath, "w")
+  category.src = "/img/categories/" .. filePath
+  category:update('src')
 
   os.execute("mkdir " .. "./build/img/" .. category.id)
-  upladed:write(file.content)
-  upladed:close()
+
+  image:write(self.img_path .. filePath)
+  image:destroy()
 
   return category
 end

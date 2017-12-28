@@ -4,17 +4,20 @@ local Model = require("lapis.db.model").Model
 local Photos = Model:extend("photos")
 
 local split = require "utils.split"
+local reverse = require "utils.reverse"
 
 Photos.img_path = "./build/img/" 
 
 function Photos:getMainScreen() 
-  return self:select("where is_main=?", 1, {fields = "src, id, caption, title"})
+  local photos = self:select("where is_main=?", 1, {fields = "src, id, caption, title"})
+
+  return reverse(photos)
 end
 
 function Photos:getPhoto(id) 
   local photo = self:find(id)
   
-  return photo
+  return photo;
 end 
 
 function Photos:getPhotos(category_id)
@@ -30,7 +33,7 @@ function Photos:getPhotos(category_id)
     photos = self:select(
       nil, 
       nil, 
-      {fields = "thumbnail as src, id, caption, title"}
+      {fields = "thumbnail as src, id, caption, title, category_id"}
     )
   end
 
@@ -81,6 +84,8 @@ function Photos:uploadPhoto(file, info)
   
   image:write(self.img_path .. filePath)
   thumb:write(self.img_path .. thumbPath)
+  image:destroy()
+  thumb:destroy()
 
   return photo
 end
