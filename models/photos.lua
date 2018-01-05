@@ -22,7 +22,6 @@ end
 
 function Photos:getPhotos(category_id)
   local photos = {}
-
   if category_id then 
     photos = self:select(
       "where category_id=?", 
@@ -31,9 +30,9 @@ function Photos:getPhotos(category_id)
     )
   else 
     photos = self:select(
+      "group by category_id",
       nil, 
-      nil, 
-      {fields = "thumbnail as src, id, caption, title, category_id"}
+      {fields = "thumbnail as src, id, title, category_id"}
     )
   end
 
@@ -69,19 +68,11 @@ function Photos:uploadPhoto(file, info)
                     .. info.name .. "_" 
                     .. photo.id
                     .. "." .. mimeType
-                    
-  --photo = self:find(photo.id);
 
   photo.src = "/img/" .. filePath
   photo.thumbnail = "/img/" .. thumbPath
   photo:update('src', 'thumbnail')
 
-  --db.query(
-    --"UPDATE photos SET src = ?, thumbnail = ? WHERE id = ?", 
-    --"/img/" .. filePath, 
-    --"/img/" .. thumbPath, photo.id
-  --)
-  
   image:write(self.img_path .. filePath)
   thumb:write(self.img_path .. thumbPath)
   image:destroy()
