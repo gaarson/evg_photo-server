@@ -48,7 +48,8 @@ function Categories:deleteCategory(category)
   local deleted = self:find(category.id)
   deleted:delete()
   os.remove("./build" .. deleted.src)
-  
+  os.remove("./build/img/" .. deleted.id)
+
   return deleted
 end
 
