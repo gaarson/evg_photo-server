@@ -5,14 +5,6 @@ local to_json = require("lapis.util").to_json
 local Photos = require "models.photos"
 
 return {
-  before = function(self) 
-    self.res.headers["Access-Control-Allow-Origin"] = "*"
-  end,
-
-  OPTIONS = function(self) 
-    
-  end,
-
   GET = function(self) 
     local category_id = self.params.category or nil
     local photos = assert_error(Photos:getPhotos(category_id))

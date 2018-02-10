@@ -15,6 +15,7 @@ local photos = require "controllers.photos"
 app:match("/api/main", respond_to(main))
 app:match("/api/photos", respond_to(photos))
 app:match("/api/categories", respond_to(categories))
-app:match("/api/main/feedback", respond_to(feedback))
+app:match("/api/feedback", respond_to(feedback))
+
 
 return app

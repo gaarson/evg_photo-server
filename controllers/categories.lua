@@ -9,10 +9,6 @@ return {
     self.res.headers["Access-Control-Allow-Origin"] = "*"
   end,
 
-  OPTIONS = function(self) 
-    
-  end,
-
   GET = function(self)
     local list = assert_error(Categories:getCategories(self.params.id))
     return { json = list }
